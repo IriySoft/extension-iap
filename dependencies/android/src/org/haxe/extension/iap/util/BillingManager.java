@@ -140,7 +140,9 @@ public class BillingManager implements PurchasesUpdatedListener {
       .enableAutoServiceReconnection()
       .build();
 
-    Log.d(TAG, "Starting setup.");
+    Log.d(TAG, "Starting connection.");
+
+    startServiceConnection(null, null);
     //queryPurchases();
   }
 
@@ -149,7 +151,7 @@ public class BillingManager implements PurchasesUpdatedListener {
    */
   @Override
   public void onPurchasesUpdated(BillingResult result, List<Purchase> purchases) {
-    if (result.getResponseCode() == BillingResponseCode.OK) {
+    if (result.getResponseCode() == BillingResponseCode.OK && purchases != null) {
       mPurchases.clear();
       for (Purchase purchase : purchases) {
         handlePurchase(purchase);
