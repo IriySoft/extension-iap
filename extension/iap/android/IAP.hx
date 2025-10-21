@@ -232,9 +232,13 @@ import openfl.utils.JNI;
 
 
 	private static function get_available ():Bool {
+		
+		//if (funcReady == null) {
+		//	funcReady = JNI.createStaticMethod ("org/haxe/extension/iap/InAppPurchase", "isReady", "()Z");
+		//}
 
+		//return funcReady();
 		return true;
-
 	}
 
 	private static function get_manualTransactionMode ():Bool {
@@ -287,6 +291,7 @@ import openfl.utils.JNI;
 	private static var funcQueryInventory:Dynamic;
 	private static var funcQuerySkuDetails:Dynamic;
 	private static var funcTest:Dynamic;
+	private static var funcReady:Dynamic;
 }
 
 

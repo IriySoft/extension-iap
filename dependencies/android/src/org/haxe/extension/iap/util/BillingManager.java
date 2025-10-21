@@ -142,7 +142,21 @@ public class BillingManager implements PurchasesUpdatedListener {
 
     Log.d(TAG, "Starting connection.");
 
-    startServiceConnection(null, null);
+    Runnable onError = new Runnable() {
+      @Override
+      public void run() {
+        mBillingUpdatesListener.onBillingClientSetupFinished(false);
+      }
+    };
+
+    Runnable onSuccess = new Runnable() {
+      @Override
+      public void run() {
+        mBillingUpdatesListener.onBillingClientSetupFinished(true);
+      }
+    };
+
+    startServiceConnection(onSuccess, onError);
     //queryPurchases();
   }
 
@@ -431,13 +445,13 @@ public class BillingManager implements PurchasesUpdatedListener {
     if (mBillingClient == null || result.getResponseCode() != BillingResponseCode.OK) {
       Log.e(TAG, "Billing client was null or result code (" + result.getResponseCode()
           + ") was bad - quitting");
-      mBillingUpdatesListener.onBillingClientSetupFinished(false);
+      //mBillingUpdatesListener.onBillingClientSetupFinished(false);
       return;
     }
 
     Log.e(TAG, "Query inventory was successful.");
     mBillingUpdatesListener.onQueryPurchasesFinished(purchases);
-    mBillingUpdatesListener.onBillingClientSetupFinished(true);
+    //mBillingUpdatesListener.onBillingClientSetupFinished(true);
   }
 
   /**

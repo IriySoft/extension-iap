@@ -203,6 +203,12 @@ public class InAppPurchase extends Extension {
 		}
 	}
 
+	public static Boolean isReady() {
+	        return true;
+	        //if (InAppPurchase.updateListener == null) return false;
+		//return InAppPurchase.updateListener.initialized;
+	}
+
 	public static void buy (final String productID, final String devPayload) {
 		// IabHelper.launchPurchaseFlow() must be called from the main activity's UI thread
 		Extension.mainActivity.runOnUiThread(new Runnable()
