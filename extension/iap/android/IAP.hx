@@ -386,13 +386,15 @@ private class IAPHandler {
 	///////////////////////////////////////////////////////////////////////////////////////////
 
 	public function onRequestProductDataComplete(response:String):Void {
-
+		trace('onRequestProductDataComplete: $response');
 		if (response == "Failure") {
 			IAP.dispatchEvent (new IAPEvent (IAPEvent.PURCHASE_PRODUCT_DATA_FAILED));
 
 		} else {
 
 			var dynResp:Dynamic = Json.parse(response);
+			IAP.inventory.updateProductDetails(dynResp);
+
 			var evt:IAPEvent = new IAPEvent (IAPEvent.PURCHASE_PRODUCT_DATA_COMPLETE);
 			evt.productsData = new Array<IAProduct>();
 
@@ -421,7 +423,8 @@ private class IAPHandler {
 	public function onQueryInventoryComplete(response:String):Void {
 
 		var dynResp:Dynamic = Json.parse(response);
-		IAP.inventory = new Inventory(dynResp);
+		//IAP.inventory = new Inventory(dynResp);
+		IAP.inventory.updatePurchases(dynResp);
 
 		var evt:IAPEvent = new IAPEvent (IAPEvent.QUERY_INVENTORY_COMPLETE);		
 		IAP.dispatchEvent(evt);
