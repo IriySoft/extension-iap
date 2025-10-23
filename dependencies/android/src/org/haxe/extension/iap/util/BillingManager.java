@@ -130,6 +130,10 @@ public class BillingManager implements PurchasesUpdatedListener {
     void onServiceConnected(BillingResult result);
   }
 
+  public Boolean isConnected() {
+    return mIsServiceConnected;
+  }
+
   public BillingManager(Activity activity, final BillingUpdatesListener updatesListener) {
     Log.d(TAG, "Creating Billing client.");
     mActivity = activity;
@@ -445,13 +449,14 @@ public class BillingManager implements PurchasesUpdatedListener {
     if (mBillingClient == null || result.getResponseCode() != BillingResponseCode.OK) {
       Log.e(TAG, "Billing client was null or result code (" + result.getResponseCode()
           + ") was bad - quitting");
-      //mBillingUpdatesListener.onBillingClientSetupFinished(false);
+      // TODO: should notify that the purchses query failed instead
+      mBillingUpdatesListener.onBillingClientSetupFinished(false); 
       return;
     }
 
     Log.e(TAG, "Query inventory was successful.");
     mBillingUpdatesListener.onQueryPurchasesFinished(purchases);
-    //mBillingUpdatesListener.onBillingClientSetupFinished(true);
+    //mBillingUpdatesListener.onBillingClientSetupFinished(true);  // why?
   }
 
   /**
