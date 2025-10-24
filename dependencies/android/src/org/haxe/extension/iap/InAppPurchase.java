@@ -125,7 +125,7 @@ public class InAppPurchase extends Extension {
 		public void onQueryPurchasesFinished(List<Purchase> purchaseList) {
 			String jsonResp =  "{ \"purchases\":[ ";
 			for (Purchase purchase : purchaseList) {
-				if(purchase.getPurchaseState() == PurchaseState.PURCHASED) { // what about the other states??
+				if(purchase.getPurchaseState() == PurchaseState.PURCHASED) {
 					for(String sku : purchase.getSkus()) {
 						jsonResp += "{" +
 								"\"key\":\"" + sku +"\", " +
@@ -202,12 +202,6 @@ public class InAppPurchase extends Extension {
 	
 			return resultObject;
 		}
-	}
-
-	public static Boolean isReady() {
-	        return true;
-	        //if (InAppPurchase.updateListener == null) return false;
-		//return InAppPurchase.updateListener.initialized;
 	}
 
 	public static void buy (final String productID, final String devPayload) {

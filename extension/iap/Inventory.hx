@@ -14,8 +14,22 @@ class Inventory
 	{
 		productDetailsMap = new Map();
 		purchaseMap = new Map();
+		updateDescriptions(dynObj);
 		updateProductDetails(dynObj);
 		updatePurchases(dynObj);
+	}
+	
+	/** updates descriptions (whatever it is) from dynObj. */
+	public function updateDescriptions(dynObj: Dynamic): Void {
+		if (dynObj != null) {
+			var dynDescriptions:Array<Dynamic> = Reflect.field(dynObj, "descriptions");
+			if (dynDescriptions != null) {
+				for (dynItm in dynDescriptions) {
+					productDetailsMap.set(cast Reflect.field(dynItm, "key"), new ProductDetails(Reflect.field(dynItm, "value")));
+				}
+				
+			}
+		}	
 	}
 
 	/** updates product detais list (available IAPs) from dynObj. */
@@ -28,12 +42,10 @@ class Inventory
 				for (dynItm in dynDescriptions) {
 					var p: ProductDetails = new ProductDetails(dynItm);
 					if (p.productID != null) productDetailsMap.set(p.productID, p);
-					//productDetailsMap.set(cast Reflect.field(dynItm, "key"), new ProductDetails(Reflect.field(dynItm, "value")));
 				}
 				
 			}
 		}
-		trace("Inventory product details:\n"+productDetailsMap);
 	}
 
 	/** populate purchases list from dynObj. */
@@ -51,7 +63,6 @@ class Inventory
 			}
 			
 		}
-		trace("Inventory purchases:\n"+purchaseMap);
 	}
 	
 	/** Returns the listing details for an in-app product. */

@@ -233,12 +233,8 @@ import openfl.utils.JNI;
 
 	private static function get_available ():Bool {
 		
-		//if (funcReady == null) {
-		//	funcReady = JNI.createStaticMethod ("org/haxe/extension/iap/InAppPurchase", "isReady", "()Z");
-		//}
-
-		//return funcReady();
 		return true;
+
 	}
 
 	private static function get_manualTransactionMode ():Bool {
@@ -291,7 +287,6 @@ import openfl.utils.JNI;
 	private static var funcQueryInventory:Dynamic;
 	private static var funcQuerySkuDetails:Dynamic;
 	private static var funcTest:Dynamic;
-	private static var funcReady:Dynamic;
 }
 
 
@@ -386,7 +381,7 @@ private class IAPHandler {
 	///////////////////////////////////////////////////////////////////////////////////////////
 
 	public function onRequestProductDataComplete(response:String):Void {
-		trace('onRequestProductDataComplete: $response');
+
 		if (response == "Failure") {
 			IAP.dispatchEvent (new IAPEvent (IAPEvent.PURCHASE_PRODUCT_DATA_FAILED));
 
@@ -423,7 +418,6 @@ private class IAPHandler {
 	public function onQueryInventoryComplete(response:String):Void {
 
 		var dynResp:Dynamic = Json.parse(response);
-		//IAP.inventory = new Inventory(dynResp);
 		IAP.inventory.updatePurchases(dynResp);
 
 		var evt:IAPEvent = new IAPEvent (IAPEvent.QUERY_INVENTORY_COMPLETE);		
