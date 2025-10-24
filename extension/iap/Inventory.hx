@@ -36,8 +36,9 @@ class Inventory
 		trace("Inventory product details:\n"+productDetailsMap);
 	}
 
-	/** updates purchases list from dynObj. */
+	/** populate purchases list from dynObj. */
 	public function updatePurchases(dynObj: Dynamic): Void {
+		cleanPurchases();
 		if (dynObj != null) {
 			var dynPurchases:Array<Dynamic> = Reflect.field(dynObj, "purchases");
 			if (dynPurchases != null) {
@@ -83,6 +84,10 @@ class Inventory
      */
     public function erasePurchase(productId:String) :Void {
         if (purchaseMap.exists(productId)) purchaseMap.remove(productId);
+    }
+
+    public function cleanPurchases(): Void {
+      purchaseMap.clear();
     }
 	
 }

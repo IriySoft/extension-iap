@@ -328,10 +328,10 @@ private class IAPHandler {
 
 	public function onConsume (response:String):Void {
 		trace('onConsume: $response');
-
 		var dynResp:Dynamic = Json.parse(response);
 		var evt:IAPEvent = new IAPEvent (IAPEvent.PURCHASE_CONSUME_SUCCESS);
-		evt.productID = Reflect.field(dynResp, "productId");		
+		evt.productID = Reflect.field(dynResp, "productId");
+		IAP.inventory.erasePurchase(evt.productID);
 		IAP.dispatchEvent(evt);
 	}
 

@@ -125,12 +125,13 @@ public class InAppPurchase extends Extension {
 		public void onQueryPurchasesFinished(List<Purchase> purchaseList) {
 			String jsonResp =  "{ \"purchases\":[ ";
 			for (Purchase purchase : purchaseList) {
-				if(purchase.getPurchaseState() == PurchaseState.PURCHASED) {
-					for(String sku : purchase.getSkus()){
+				if(purchase.getPurchaseState() == PurchaseState.PURCHASED) { // what about the other states??
+					for(String sku : purchase.getSkus()) {
 						jsonResp += "{" +
 								"\"key\":\"" + sku +"\", " +
 								"\"value\":" + purchase.getOriginalJson() + "," + 
 								"\"itemType\":\"\"," +
+								"\"purchaseState\":" + purchase.getPurchaseState() +"\", " +
 								"\"signature\":\"" + purchase.getSignature() + "\"},";
 					}
 				}
