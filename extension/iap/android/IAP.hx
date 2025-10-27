@@ -232,7 +232,7 @@ import openfl.utils.JNI;
 
 
 	private static function get_available ():Bool {
-
+		
 		return true;
 
 	}
@@ -323,10 +323,10 @@ private class IAPHandler {
 
 	public function onConsume (response:String):Void {
 		trace('onConsume: $response');
-
 		var dynResp:Dynamic = Json.parse(response);
 		var evt:IAPEvent = new IAPEvent (IAPEvent.PURCHASE_CONSUME_SUCCESS);
-		evt.productID = Reflect.field(dynResp, "productId");		
+		evt.productID = Reflect.field(dynResp, "productId");
+		IAP.inventory.erasePurchase(evt.productID);
 		IAP.dispatchEvent(evt);
 	}
 
@@ -388,6 +388,8 @@ private class IAPHandler {
 		} else {
 
 			var dynResp:Dynamic = Json.parse(response);
+			IAP.inventory.updateProductDetails(dynResp);
+
 			var evt:IAPEvent = new IAPEvent (IAPEvent.PURCHASE_PRODUCT_DATA_COMPLETE);
 			evt.productsData = new Array<IAProduct>();
 
@@ -416,7 +418,7 @@ private class IAPHandler {
 	public function onQueryInventoryComplete(response:String):Void {
 
 		var dynResp:Dynamic = Json.parse(response);
-		IAP.inventory = new Inventory(dynResp);
+		IAP.inventory.updatePurchases(dynResp);
 
 		var evt:IAPEvent = new IAPEvent (IAPEvent.QUERY_INVENTORY_COMPLETE);		
 		IAP.dispatchEvent(evt);

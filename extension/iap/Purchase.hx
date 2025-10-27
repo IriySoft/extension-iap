@@ -5,7 +5,11 @@ class Purchase
 {
 
 	public var productID:String;
-	
+
+	public static inline var STATE_PURCHASED: 		Int = 1;
+	public static inline var STATE_PENDING: 			Int = 2;
+	public static inline var STATE_UNSPECIFIED: 	Int = 0;
+
 	// Android Properties
 	public var itemType(default, null):String;
 	public var orderId(default, null):String;

@@ -4,29 +4,54 @@ package extension.iap;
  * Represents a block of information about in-app items.
  * An Inventory is returned by such methods as {@link IAP#queryInventory}.
  */
-
 class Inventory
 {
 
-	public var productDetailsMap(default, null): Map<String, ProductDetails>;
-	public var purchaseMap(default, null): Map<String, Purchase>;
+	public var productDetailsMap(default, null): Map<String, ProductDetails> = null;
+	public var purchaseMap(default, null): Map<String, Purchase> = null;
 	
 	public function new(?dynObj:Dynamic) 
 	{
 		productDetailsMap = new Map();
 		purchaseMap = new Map();
-		
+		updateDescriptions(dynObj);
+		updateProductDetails(dynObj);
+		updatePurchases(dynObj);
+	}
+	
+	/** updates descriptions (whatever it is) from dynObj. */
+	public function updateDescriptions(dynObj: Dynamic): Void {
 		if (dynObj != null) {
-			
 			var dynDescriptions:Array<Dynamic> = Reflect.field(dynObj, "descriptions");
 			if (dynDescriptions != null) {
-				
 				for (dynItm in dynDescriptions) {
 					productDetailsMap.set(cast Reflect.field(dynItm, "key"), new ProductDetails(Reflect.field(dynItm, "value")));
 				}
 				
 			}
+		}	
+	}
+
+	/** updates product detais list (available IAPs) from dynObj. */
+	public function updateProductDetails(dynObj: Dynamic): Void {
+		if (dynObj != null) {
 			
+			var dynDescriptions:Array<Dynamic> = Reflect.field(dynObj, "products");
+			if (dynDescriptions != null) {
+				
+				for (dynItm in dynDescriptions) {
+					var p: ProductDetails = new ProductDetails(dynItm);
+					if (p.productID != null) productDetailsMap.set(p.productID, p);
+				}
+				
+			}
+		}
+	}
+
+	/** populate purchases list from dynObj. */
+	public function updatePurchases(dynObj: Dynamic): Void {
+		cleanPurchases();
+		if (dynObj != null) {
 			var dynPurchases:Array<Dynamic> = Reflect.field(dynObj, "purchases");
 			if (dynPurchases != null) {
 				
@@ -38,11 +63,10 @@ class Inventory
 			}
 			
 		}
-
 	}
 	
 	/** Returns the listing details for an in-app product. */
-	public function getProductDetails(productId:String) :ProductDetails {
+	public function getProductDetails(productId: String): ProductDetails {
 		return productDetailsMap.get(productId);
 	}
 	
@@ -57,8 +81,8 @@ class Inventory
     }
 
     /** Return whether or not details about the given product are available. */
-    public function hasDetails(productId:String) :Bool {
-        return productDetailsMap.exists(productId);
+    public function hasDetails(productId: String) :Bool {
+      return productDetailsMap.exists(productId);
     }
 
     /**
@@ -70,8 +94,11 @@ class Inventory
      * a new Inventory.
      */
     public function erasePurchase(productId:String) :Void {
-		
         if (purchaseMap.exists(productId)) purchaseMap.remove(productId);
+    }
+
+    public function cleanPurchases(): Void {
+      purchaseMap.clear();
     }
 	
 }
