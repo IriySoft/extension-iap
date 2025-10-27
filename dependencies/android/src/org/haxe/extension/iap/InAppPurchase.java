@@ -125,13 +125,14 @@ public class InAppPurchase extends Extension {
 		public void onQueryPurchasesFinished(List<Purchase> purchaseList) {
 			String jsonResp =  "{ \"purchases\":[ ";
 			for (Purchase purchase : purchaseList) {
-				if(purchase.getPurchaseState() == PurchaseState.PURCHASED) {
+				int purchaseState = purchase.getPurchaseState();
+				if(purchaseState == PurchaseState.PURCHASED) {
 					for(String sku : purchase.getSkus()) {
 						jsonResp += "{" +
 								"\"key\":\"" + sku +"\", " +
 								"\"value\":" + purchase.getOriginalJson() + "," + 
 								"\"itemType\":\"\"," +
-								"\"purchaseState\":" + purchase.getPurchaseState() +"\", " +
+								"\"purchaseState\":" + purchaseState+", " +
 								"\"signature\":\"" + purchase.getSignature() + "\"},";
 					}
 				}
@@ -152,7 +153,7 @@ public class InAppPurchase extends Extension {
 				resultObject.put("productId", productDetails.getProductId());
 				resultObject.put("type", productDetails.getProductType());
 				resultObject.put("title", productDetails.getTitle());
-				resultObject.put("name", productDetails.getName());
+				resultObject.put("name", productDetails	.getName());
 				resultObject.put("description", productDetails.getDescription());
 				ProductDetails.OneTimePurchaseOfferDetails purchaseOfferDetails = productDetails.getOneTimePurchaseOfferDetails();
 				if(purchaseOfferDetails != null) {
