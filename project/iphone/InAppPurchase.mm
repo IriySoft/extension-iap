@@ -53,6 +53,7 @@ void sendPurchaseProductDataEventWrap(const char* type, NSString* productID, NSS
 - (BOOL)canMakePurchases;
 - (void)purchaseProduct:(NSString*)productIdentifiers;
 - (void)requestProductData:(NSString*)productIdentifiers;
+- (void)processTransaction:(SKPaymentTransaction*)transaction wasSuccessful:(BOOL)wasSuccessful;
 - (BOOL)finishTransactionManually:(NSString *)transactionID;
 - (SKProduct*)findProduct:(NSString*)productIdentifier;
 
@@ -79,11 +80,12 @@ void sendPurchaseProductDataEventWrap(const char* type, NSString* productID, NSS
 		//});
 	}
     
+	sendPurchaseEventWrap("started", @"");
+
 	NSUInteger nbTransaction = [[SKPaymentQueue defaultQueue].transactions count];
 	if (nbTransaction > 0) {
 		[self updateAllTransactionsManually];
 	}
-	sendPurchaseEventWrap("started", @"");
     
     //[self checkQueue];
     //inited = true;
@@ -211,6 +213,8 @@ void sendPurchaseProductDataEventWrap(const char* type, NSString* productID, NSS
 - (BOOL) finishTransactionManually:(NSString *)transactionID
 {
     NSArray * transactions = [[SKPaymentQueue defaultQueue] transactions];
+
+		// if manualTransactionMode is set to flase, successful transaction will NEVER be finished!
     if (manualTransactionMode && transactions) {
         // 'transactions' contains SKPaymentTransaction, find the appropriate transaction
         for (SKPaymentTransaction * transaction in transactions) {
@@ -226,7 +230,8 @@ void sendPurchaseProductDataEventWrap(const char* type, NSString* productID, NSS
     return false;
 }
 
-- (void)finishTransaction:(SKPaymentTransaction*)transaction wasSuccessful:(BOOL)wasSuccessful
+// renamed finishTransaction to processTransaction, because it doesn't always finish the transaction!
+- (void)processTransaction:(SKPaymentTransaction*)transaction wasSuccessful:(BOOL)wasSuccessful
 {
     if(wasSuccessful)
     {
@@ -291,7 +296,7 @@ void sendPurchaseProductDataEventWrap(const char* type, NSString* productID, NSS
 		
 	} else {
 		NSLog(@"extIAP mm: Finish Transaction");
-		[self finishTransaction:transaction wasSuccessful:YES];
+		[self processTransaction:transaction wasSuccessful:YES];
 	}
 }
 
@@ -299,7 +304,7 @@ void sendPurchaseProductDataEventWrap(const char* type, NSString* productID, NSS
 {
     if(transaction.error.code != SKErrorPaymentCancelled)
     {
-        [self finishTransaction:transaction wasSuccessful:NO];
+        [self processTransaction:transaction wasSuccessful:NO];
     }
     else
     {
@@ -370,7 +375,7 @@ void sendPurchaseProductDataEventWrap(const char* type, NSString* productID, NSS
 				
 				//sendPurchaseDownloadEvent("downloadComplete", [download.contentIdentifier UTF8String], [download.transaction.transactionIdentifier UTF8String], [[download.contentURL absoluteString] UTF8String], [download.contentVersion UTF8String], nil);
 				
-				[self finishTransaction:download.transaction wasSuccessful:YES];
+				[self processTransaction:download.transaction wasSuccessful:YES];
                 // Download is complete. Content file URL is at
                 // path referenced by download.contentURL. Move
                 // it somewhere safe, unpack it and give the user

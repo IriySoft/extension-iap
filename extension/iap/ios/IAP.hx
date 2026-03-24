@@ -179,8 +179,9 @@ class IAP {
 	 * 		PURCHASE_CONSUME_FAILURE: Fired when the consume attempt failed
 	 */
 
-	public static function consume (purchase:Purchase) : Void {
-		purchases_finish_transaction (purchase.transactionID);
+	public static function consume (purchase:Purchase): Void {
+		purchases_finish_transaction(purchase.transactionID);
+		IAP.inventory.erasePurchase(purchase.productID);		
 	}
 
 	/**
@@ -193,10 +194,20 @@ class IAP {
 	 * 		PURCHASE_ACKNOWLEDGE_FAILURE: Fired when the acknowledgePurchase attempt failed
 	 */
 
-	 public static function acknowledgePurchase (purchase:Purchase):Void {
+	public static function acknowledgePurchase (purchase: Purchase): Void {
+		purchases_finish_transaction(purchase.transactionID);
+		var inventoryPurchase: Purchase = IAP.inventory.getPurchase(purchase.productID);
 
-		//TODO
+		// to let check if the purchase was already acknowledged (meaning the transaction already finished)
+		if (inventoryPurchase != null) inventoryPurchase.acknowledged = true; 
 	}
+
+	// added for consistency with Android version. Fires the success callback immediately
+	public static function queryInventory (_, _): Void {
+		var evt: IAPEvent = new IAPEvent(IAPEvent.QUERY_INVENTORY_COMPLETE);
+		IAP.dispatchEvent(evt);
+	}
+
 
 	/**
 	 * Manually finishes a transaction from the SKPaymentQueue. If <code>manualTransactionMode</code> is false,

@@ -18,10 +18,12 @@ class Purchase
 	public var purchaseState(default, null):Int;
 	public var developerPayload(default, null):String;
 	public var purchaseToken(default, null):String;
-	public var acknowledged(default, null):Bool;
 	public var signature(default, null):String;
 	public var originalJson(default, null):String;
 	public var json(default, null):String;
+
+	// iOS and Android Properties
+	public var acknowledged(default, null):Bool;
 
 	// iOS Properties
 	public var transactionID(default, null):String;
