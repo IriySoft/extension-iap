@@ -66,7 +66,7 @@ void sendPurchaseProductDataEventWrap(const char* type, NSString* productID, NSS
 		preInited = true;
 		static dispatch_once_t onceToken;
 		manualTransactionMode = true;
-		nslog(@"extIAP mm: xxxxxxx purchase init v2");
+		NSLog(@"extIAP mm: xxxxxxx purchase init v2");
 		//dispatch_once(&onceToken, ^{
 			[[SKPaymentQueue defaultQueue] addTransactionObserver:self];
 		//});
@@ -85,14 +85,14 @@ void sendPurchaseProductDataEventWrap(const char* type, NSString* productID, NSS
 
 - (void)checkQueue
 {
-    nslog(@"extIAP mm: checkQueue");
+    NSLog(@"extIAP mm: checkQueue");
     
 	[self paymentQueue:[SKPaymentQueue defaultQueue] updatedTransactions:[[SKPaymentQueue defaultQueue] transactions]];
 }
 
 - (void)restorePurchases 
 {
-	nslog(@"extIAP mm: starting restore");
+	NSLog(@"extIAP mm: starting restore");
 	[[SKPaymentQueue defaultQueue] restoreCompletedTransactions];
 }
 
@@ -106,14 +106,14 @@ void sendPurchaseProductDataEventWrap(const char* type, NSString* productID, NSS
 	SKProduct* product = [self findProduct:productIdentifiers];//findProduct(productIdentifiers);
 	if (product != nil)
 	{
-		nslog(@"extIAP mm: product found");
+		NSLog(@"extIAP mm: product found");
 		SKMutablePayment *payment = [SKMutablePayment paymentWithProduct:product];
         	payment.quantity = 1;
 		[[SKPaymentQueue defaultQueue] addPayment:payment];
 	}
 	else
 	{
-		nslog(@"extIAP mm: product not found");
+		NSLog(@"extIAP mm: product not found");
 	}
 } 
 
@@ -121,7 +121,7 @@ void sendPurchaseProductDataEventWrap(const char* type, NSString* productID, NSS
 {
 	if(productsRequest != NULL)
 	{
-		nslog(@"extIAP mm: Can't request product data while performing a previous transaction.");
+		NSLog(@"extIAP mm: Can't request product data while performing a previous transaction.");
 		return;
 	}
 
@@ -150,7 +150,7 @@ void sendPurchaseProductDataEventWrap(const char* type, NSString* productID, NSS
 
 - (void)request:(SKProductsRequest *)request didFailWithError:(NSError *)error
 {
-	nslog(@"extIAP mm: Error: %@",error);
+	NSLog(@"extIAP mm: Error: %@",error);
 	if( productsRequest == request ) productsRequest = NULL;
 	
 	sendPurchaseEventWrap("productDataFailed", error.localizedDescription);
@@ -159,8 +159,8 @@ void sendPurchaseProductDataEventWrap(const char* type, NSString* productID, NSS
 - (void)productsRequest:(SKProductsRequest *)request didReceiveResponse:(SKProductsResponse*)response
 {   	
 	int count = [response.products count];
-    	nslog(@"extIAP mm: productsRequest");
-	nslog(@"extIAP mm: Number of Products: %i", count);
+    	NSLog(@"extIAP mm: productsRequest");
+	NSLog(@"extIAP mm: Number of Products: %i", count);
 
 	// release the products request BEFORE calling the completion to support calling purchase()
 	// in the completion result handlers
@@ -197,7 +197,7 @@ void sendPurchaseProductDataEventWrap(const char* type, NSString* productID, NSS
     
     else 
     {
-		nslog(@"extIAP mm: No products are available");
+		NSLog(@"extIAP mm: No products are available");
 	}
 }
 
@@ -214,7 +214,7 @@ void sendPurchaseProductDataEventWrap(const char* type, NSString* productID, NSS
         }
 
         // transaction identifier was not found, quick developer log and return failure
-        nslog(@"extIAP mm: Failed to complete transaction manually. [expected_transaction=%@; open_transactions=%@]", transactionID, [[transactions valueForKey:@"transactionIdentifier"] componentsJoinedByString:@", "]);
+        NSLog(@"extIAP mm: Failed to complete transaction manually. [expected_transaction=%@; open_transactions=%@]", transactionID, [[transactions valueForKey:@"transactionIdentifier"] componentsJoinedByString:@", "]);
     }
     return false;
 }
@@ -229,7 +229,7 @@ void sendPurchaseProductDataEventWrap(const char* type, NSString* productID, NSS
         }*/
 
         @try {
-            nslog(@"extIAP mm: Successful Purchase");
+            NSLog(@"extIAP mm: Successful Purchase");
             NSString* receiptString = [[NSString alloc] initWithString:transaction.payment.productIdentifier];
 
             NSURL *receiptURL = [[NSBundle mainBundle] appStoreReceiptURL];
@@ -257,18 +257,18 @@ void sendPurchaseProductDataEventWrap(const char* type, NSString* productID, NSS
             sendPurchaseFinishEvent("success", [transaction.payment.productIdentifier UTF8String], [transaction.transactionIdentifier UTF8String], ([transaction.transactionDate timeIntervalSince1970] * 1000), [jsonObjectString UTF8String]);
 		}
 		@catch (NSException *exception) {
-			nslog(@"extIAP mm: %@", exception.reason);
+			NSLog(@"extIAP mm: %@", exception.reason);
 		}
 	}
     
     else
     {
-    	nslog(@"extIAP mm: Failed Purchase");
+    	NSLog(@"extIAP mm: Failed Purchase");
 
         [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
         if (transaction.error.code != SKErrorPaymentCancelled)
         {
-            nslog(@"extIAP mm: Transaction error: %@", transaction.error.localizedDescription);
+            NSLog(@"extIAP mm: Transaction error: %@", transaction.error.localizedDescription);
         }
         /* Pass error message instead of transaction.payment.productIdentifier */
         sendPurchaseEventWrap("failed", transaction.error.localizedDescription);
@@ -283,7 +283,7 @@ void sendPurchaseProductDataEventWrap(const char* type, NSString* productID, NSS
 		[[SKPaymentQueue defaultQueue] startDownloads:transaction.downloads];
 		
 	} else {
-		nslog(@"extIAP mm: Finish Transaction");
+		NSLog(@"extIAP mm: Finish Transaction");
 		[self finishTransaction:transaction wasSuccessful:YES];
 	}
 }
@@ -296,7 +296,7 @@ void sendPurchaseProductDataEventWrap(const char* type, NSString* productID, NSS
     }
     else
     {
-    	nslog(@"extIAP mm: Canceled Purchase");
+    	NSLog(@"extIAP mm: Canceled Purchase");
     	sendPurchaseEventWrap("cancel", transaction.payment.productIdentifier);
         [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
     }
@@ -305,24 +305,24 @@ void sendPurchaseProductDataEventWrap(const char* type, NSString* productID, NSS
 - (void) updateAllTransactionsManually
 {
     NSArray * transactions = [[SKPaymentQueue defaultQueue] transactions];
-    nslog(@"extIAP mm: manual updatedTransactions count %lu", (unsigned long)[transactions count]);
+    NSLog(@"extIAP mm: manual updatedTransactions count %lu", (unsigned long)[transactions count]);
     
     for(SKPaymentTransaction *transaction in transactions)
     {
         switch(transaction.transactionState)
         {
             case SKPaymentTransactionStatePurchased:
-		nslog(@"extIAP mm: SKPaymentTransactionStatePurchased");
+		NSLog(@"extIAP mm: SKPaymentTransactionStatePurchased");
                 [self completeTransaction:transaction];
 		break;
 
             case SKPaymentTransactionStateRestored:
-		nslog(@"extIAP mm: SKPaymentTransactionStateRestored");
+		NSLog(@"extIAP mm: SKPaymentTransactionStateRestored");
                 [self completeTransaction:transaction];
                 break;
                 
             case SKPaymentTransactionStateFailed:
-		nslog(@"extIAP mm: SKPaymentTransactionStateFailed");
+		NSLog(@"extIAP mm: SKPaymentTransactionStateFailed");
                 [self failedTransaction:transaction];
                 break;
                 
@@ -342,7 +342,7 @@ void sendPurchaseProductDataEventWrap(const char* type, NSString* productID, NSS
 
 - (void)paymentQueue:(SKPaymentQueue *)queue updatedTransactions:(NSArray*)transactions
 {
-	nslog(@"extIAP mm: auto updatedTransactions");
+	NSLog(@"extIAP mm: auto updatedTransactions");
 	[self updateAllTransactionsManually];
 }
 
@@ -352,13 +352,13 @@ void sendPurchaseProductDataEventWrap(const char* type, NSString* productID, NSS
     {
         switch (download.downloadState) {
             case SKDownloadStateActive:
-                nslog(@"extIAP mm: Download progress = %f and Download time: %f", download.progress, download.timeRemaining);
+                NSLog(@"extIAP mm: Download progress = %f and Download time: %f", download.progress, download.timeRemaining);
 				
 				//sendPurchaseDownloadEvent("downloadProgress", [download.contentIdentifier UTF8String], [download.transaction.transactionIdentifier UTF8String], [[download.contentURL absoluteString] UTF8String], [download.contentVersion UTF8String], [[NSString stringWithFormat:@"%f", download.progress] UTF8String]);
 				
                 break;
             case SKDownloadStateFinished:
-                nslog(@"extIAP mm: Download complete: %@",download.contentURL);
+                NSLog(@"extIAP mm: Download complete: %@",download.contentURL);
 				
 				//sendPurchaseDownloadEvent("downloadComplete", [download.contentIdentifier UTF8String], [download.transaction.transactionIdentifier UTF8String], [[download.contentURL absoluteString] UTF8String], [download.contentVersion UTF8String], nil);
 				
@@ -376,20 +376,20 @@ void sendPurchaseProductDataEventWrap(const char* type, NSString* productID, NSS
 
 - (void)paymentQueueRestoreCompletedTransactionsFinished:(SKPaymentQueue *)queue
 {
-	nslog(@"extIAP mm: Restore complete!");
+	NSLog(@"extIAP mm: Restore complete!");
 	sendPurchaseEventWrap("productsRestored", @"");
 }
 
 - (void)paymentQueue:(SKPaymentQueue *)queue restoreCompletedTransactionsFailedWithError:(NSError *)error
 {
-	nslog(@"extIAP mm: Error restoring transactions");
+	NSLog(@"extIAP mm: Error restoring transactions");
 	sendPurchaseEventWrap("productsRestoredWithErrors", @"");
 	
 }
 
 - (void)dealloc
 {
-    nslog(@"extIAP mm: dealloc inapppurchase");
+    NSLog(@"extIAP mm: dealloc inapppurchase");
     
 	if(products)
         [products release];
