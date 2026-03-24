@@ -4,6 +4,9 @@
 #include "InAppPurchase.h"
 #include "InAppPurchaseEvent.h"
 
+//////////////////////////           //////////////////////////
+////////////////////////// CALLBACKS //////////////////////////
+//////////////////////////           //////////////////////////
 
 extern "C" void sendPurchaseEvent(const char* type, const char* data);
 extern "C" void sendPurchaseFinishEvent(const char* type, const char* productID, const char* transactionID, double transactionDate, const char* receipt);
@@ -31,6 +34,10 @@ void sendPurchaseProductDataEventWrap(const char* type, NSString* productID, NSS
   		sendPurchaseProductDataEvent(type, [productID UTF8String], [localizedTitle UTF8String], [localizedDescription UTF8String], priceAmountMicros, [localizedPrice UTF8String], [priceCurrencyCode UTF8String], [priceCountryCode UTF8String]);
 	});
 }
+
+//////////////////////////                     //////////////////////////
+////////////////////////// InAppPurchase class //////////////////////////
+//////////////////////////                     //////////////////////////
 
 @interface InAppPurchase: NSObject <SKProductsRequestDelegate, SKPaymentTransactionObserver>
 {
@@ -312,17 +319,17 @@ void sendPurchaseProductDataEventWrap(const char* type, NSString* productID, NSS
         switch(transaction.transactionState)
         {
             case SKPaymentTransactionStatePurchased:
-		NSLog(@"extIAP mm: SKPaymentTransactionStatePurchased");
-                [self completeTransaction:transaction];
-		break;
+							NSLog(@"extIAP mm: SKPaymentTransactionStatePurchased: %@", transaction.payment.productIdentifier);
+              [self completeTransaction:transaction];
+							break;
 
             case SKPaymentTransactionStateRestored:
-		NSLog(@"extIAP mm: SKPaymentTransactionStateRestored");
-                [self completeTransaction:transaction];
-                break;
+		  				NSLog(@"extIAP mm: SKPaymentTransactionStateRestored: %@", transaction.payment.productIdentifier);
+              [self completeTransaction:transaction];
+              break;
                 
             case SKPaymentTransactionStateFailed:
-		NSLog(@"extIAP mm: SKPaymentTransactionStateFailed");
+								NSLog(@"extIAP mm: SKPaymentTransactionStateFailed: %@", transaction.payment.productIdentifier);
                 [self failedTransaction:transaction];
                 break;
                 
@@ -335,6 +342,7 @@ void sendPurchaseProductDataEventWrap(const char* type, NSString* productID, NSS
                 break;
 			*/
             default:
+								NSLog(@"extIAP mm: transaction update at state %ld for %@", (long)transaction.transactionState, transaction.payment.productIdentifier);
                 break;
         }
     }
@@ -401,6 +409,10 @@ void sendPurchaseProductDataEventWrap(const char* type, NSString* productID, NSS
 }
 
 @end
+
+//////////////////////////           //////////////////////////
+//////////////////////////  EXTERNS  //////////////////////////
+//////////////////////////           //////////////////////////
 
 extern "C"
 {
