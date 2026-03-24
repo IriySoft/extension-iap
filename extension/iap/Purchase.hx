@@ -78,6 +78,12 @@ class Purchase
 		
 		this.originalJson = originalJson;
 	}
+
+    #if ios
+    public function acknowledge(): Void {
+      acknowledged = true;
+    }
+    #end
 	
 	public function toString() :String {
 		var res:String = "Purchase: { ";

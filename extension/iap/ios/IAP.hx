@@ -199,11 +199,11 @@ class IAP {
 		var inventoryPurchase: Purchase = IAP.inventory.getPurchase(purchase.productID);
 
 		// to let check if the purchase was already acknowledged (meaning the transaction already finished)
-		if (inventoryPurchase != null) inventoryPurchase.acknowledged = true; 
+		if (inventoryPurchase != null) inventoryPurchase.acknowledge(); 
 	}
 
 	// added for consistency with Android version. Fires the success callback immediately
-	public static function queryInventory (_, _): Void {
+	public static function queryInventory (queryItemDetails:Bool = false, moreItems:Array<String> = null): Void {
 		var evt: IAPEvent = new IAPEvent(IAPEvent.QUERY_INVENTORY_COMPLETE);
 		IAP.dispatchEvent(evt);
 	}

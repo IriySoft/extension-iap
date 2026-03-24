@@ -213,7 +213,7 @@ void sendPurchaseProductDataEventWrap(const char* type, NSString* productID, NSS
 - (BOOL) finishTransactionManually:(NSString *)transactionID
 {
     NSArray * transactions = [[SKPaymentQueue defaultQueue] transactions];
-
+    NSLog(@"extIAP mm: finish manually: %@", transactionID);
 		// if manualTransactionMode is set to flase, successful transaction will NEVER be finished!
     if (manualTransactionMode && transactions) {
         // 'transactions' contains SKPaymentTransaction, find the appropriate transaction
@@ -226,6 +226,8 @@ void sendPurchaseProductDataEventWrap(const char* type, NSString* productID, NSS
 
         // transaction identifier was not found, quick developer log and return failure
         NSLog(@"extIAP mm: Failed to complete transaction manually. [expected_transaction=%@; open_transactions=%@]", transactionID, [[transactions valueForKey:@"transactionIdentifier"] componentsJoinedByString:@", "]);
+    } else {
+        NSLog(@"extIAP mm: couldn't finish manually: %d - %lu", manualTransactionMode, [transactions count]);
     }
     return false;
 }
