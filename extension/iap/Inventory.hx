@@ -71,7 +71,7 @@ class Inventory
 	}
 	
 	/** Returns purchase information for a given product, or null if there is no purchase. */
-    public function getPurchase(productId:String) :Purchase {
+    public function getPurchase(productId:String): Purchase {
         return purchaseMap.get(productId);
     }
 
